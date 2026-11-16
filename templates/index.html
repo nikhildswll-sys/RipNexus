@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RipNexus 3D — Next-Gen Universal Media Downloader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Three.js 3D WebGL Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- 3D INTERACTIVE WEBGL BACKGROUND CANVAS -->
+    <div id="canvas-3d-wrap">
+        <canvas id="webgl-canvas"></canvas>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div class="grand-layout">
+        <!-- TOPBAR HUD -->
+        <header class="hud-topbar">
+            <div class="brand-cluster">
+                <div class="brand-cube">
+                    <div class="cube-inner">
+                        <i class="fa-solid fa-bolt-lightning"></i>
+                    </div>
+                </div>
+                <div class="brand-titles">
+                    <div class="brand-logo-text">RIP<span>NEXUS</span> <span class="badge-3d">3D HUD</span></div>
+                    <div class="brand-sub">NEXT-GEN HIGH SPEED MEDIA EXTRACTION ENGINE</div>
+                </div>
+            </div>
+
+            <!-- QUICK STATS & CONTROLS -->
+            <div class="hud-metrics">
+                <div class="metric-pill">
+                    <span class="pulse-dot"></span>
+                    <span class="metric-val" id="metric-engine">FFMPEG 9.0 READY</span>
+                </div>
+                <button class="btn-hud-action" id="btn-open-download-dir">
+                    <i class="fa-regular fa-folder-open"></i> <span>Open Vault Folder</span>
+                </button>
+                <a href="https://github.com/nikhildswll-sys/RipNexus" target="_blank" class="btn-hud-github">
+                    <i class="fa-brands fa-github"></i> <span>GitHub</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- MAIN VIEWPORT -->
+        <div class="grand-content">
+            <!-- HERO 3D PORTAL SECTION -->
+            <section class="portal-section">
+                <div class="portal-badge">
+                    <i class="fa-solid fa-shield-halved"></i> 100% AD-FREE • ZERO MALWARE • RAW BANDWIDTH
+                </div>
+                <h1 class="portal-headline">Stream to Storage in Seconds.</h1>
+                <p class="portal-sub">Paste any YouTube 4K, Instagram Reel, Twitter/X, TikTok, or Reddit link. Ripped with hardware-accelerated FFmpeg directly to your PC.</p>
+
+                <!-- 3D FLOATING SEARCH BAR -->
+                <div class="search-pod-3d" id="search-pod">
+                    <div class="search-pod-inner">
+                        <i class="fa-solid fa-link search-icon"></i>
+                        <input type="text" id="url-input" placeholder="Paste YouTube 4K, Shorts, Instagram Reel, Twitter, Pinterest, or Reddit link..." autocomplete="off">
+                        <button class="btn-pod-paste" id="btn-paste">
+                            <i class="fa-regular fa-clipboard"></i> Paste
+                        </button>
+                        <button class="btn-pod-inspect" id="btn-inspect">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>INSPECT STREAM</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SUPPORTED PLATFORMS HORIZONTAL CHIPS -->
+                <div class="platform-strip">
+                    <span class="strip-label">SUPPORTED CHANNELS:</span>
+                    <div class="strip-chips">
+                        <div class="strip-chip"><i class="fa-brands fa-youtube" style="color:#ff0033"></i> YouTube 4K / 60fps</div>
+                        <div class="strip-chip"><i class="fa-solid fa-play" style="color:#ff0055"></i> Shorts</div>
+                        <div class="strip-chip"><i class="fa-brands fa-instagram" style="color:#e1306c"></i> Instagram Reels</div>
+                        <div class="strip-chip"><i class="fa-brands fa-x-twitter" style="color:#fff"></i> Twitter / X</div>
+                        <div class="strip-chip"><i class="fa-brands fa-tiktok" style="color:#00f2fe"></i> TikTok</div>
+                        <div class="strip-chip"><i class="fa-brands fa-reddit" style="color:#ff4500"></i> Reddit Video</div>
+                        <div class="strip-chip"><i class="fa-solid fa-music" style="color:#00e676"></i> 320kbps MP3 Audio</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3D LOADER -->
+            <div class="loader-3d-box hidden" id="inspect-loader">
+                <div class="hologram-spinner">
+                    <div class="ring ring1"></div>
+                    <div class="ring ring2"></div>
+                    <div class="ring ring3"></div>
+                </div>
+                <div class="loader-text">SCANNING MEDIA STREAMS & RESOLUTIONS...</div>
+            </div>
+
+            <!-- 3D MEDIA INSPECTION CARD (TILT INTERACTIVE) -->
+            <section class="media-deck-3d hidden" id="preview-card">
+                <div class="deck-glass">
+                    <!-- LEFT THUMBNAIL SHOWCASE WITH INLINE 3D PLAYER & COVER ACTIONS -->
+                    <div class="thumb-column">
+                        <div class="thumb-3d-frame" id="thumb-frame">
+                            <img id="media-thumb" src="" alt="Thumbnail">
+                            <div class="thumb-overlay" id="thumb-overlay">
+                                <span class="live-platform-pill" id="media-platform">YOUTUBE</span>
+                                <span class="live-duration-pill" id="media-duration">0:00</span>
+                            </div>
+
+                            <!-- INLINE PLAYER (APPEARS RIGHT HERE AFTER DOWNLOAD) -->
+                            <div class="inline-player-container hidden" id="inline-player-box">
+                                <video id="inline-video" class="inline-media-player" controls preload="metadata" playsinline></video>
+                                <div id="audio-player-wrap" class="audio-player-wrap hidden">
+                                    <div class="spinning-vinyl-disc">
+                                        <i class="fa-solid fa-compact-disc"></i>
+                                    </div>
+                                    <audio id="inline-audio" class="inline-audio-player" controls preload="metadata"></audio>
+                                </div>
+                                <div class="player-live-badge">
+                                    <span class="pulse-dot"></span>
+                                    <span id="player-badge-text">NOW PLAYING • LOCAL VAULT</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QUICK THUMBNAIL & COVER ART ACTION BAR -->
+                        <div class="thumb-actions-bar">
+                            <button class="btn-thumb-action" id="btn-dl-thumb" title="Download original 16:9 HD thumbnail">
+                                <i class="fa-regular fa-image"></i> HD Thumbnail (16:9)
+                            </button>
+                            <button class="btn-thumb-action btn-cover-art" id="btn-dl-cover" title="Download clean square 1:1 Song Cover Art">
+                                <i class="fa-solid fa-compact-disc"></i> Song Cover (1:1)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT DETAILS & 3D CONTROLS -->
+                    <div class="deck-controls">
+                        <div class="deck-meta-tags">
+                            <span class="tag-author" id="media-author"><i class="fa-regular fa-user"></i> Creator</span>
+                            <span class="tag-views" id="media-views"><i class="fa-regular fa-eye"></i> 0 Views</span>
+                        </div>
+
+                        <h2 class="deck-title" id="media-title">Video Title</h2>
+
+                        <!-- 3D FORMAT SELECTION CARDS -->
+                        <div class="format-module">
+                            <div class="module-title">SELECT DESIRED OUTPUT RESOLUTION:</div>
+                            <div class="format-cards-grid">
+                                <div class="format-card-3d active" data-fmt="1080p">
+                                    <input type="radio" name="formatOption" value="1080p" checked>
+                                    <div class="card-icon"><i class="fa-solid fa-film"></i></div>
+                                    <div class="card-info">
+                                        <div class="card-name">1080p Full HD</div>
+                                        <div class="card-sub">MP4 Video • High FPS</div>
+                                    </div>
+                                    <span class="card-tag">POPULAR</span>
+                                </div>
+
+                                <div class="format-card-3d" data-fmt="4k" id="opt-4k">
+                                    <input type="radio" name="formatOption" value="4k">
+                                    <div class="card-icon" style="color:#00f2fe"><i class="fa-solid fa-tv"></i></div>
+                                    <div class="card-info">
+                                        <div class="card-name">4K Ultra HD</div>
+                                        <div class="card-sub">Maximum Resolution</div>
+                                    </div>
+                                    <span class="card-tag tag-4k">4K RAW</span>
+                                </div>
+
+                                <div class="format-card-3d" data-fmt="720p">
+                                    <input type="radio" name="formatOption" value="720p">
+                                    <div class="card-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+                                    <div class="card-info">
+                                        <div class="card-name">720p HD</div>
+                                        <div class="card-sub">Smaller File Size</div>
+                                    </div>
+                                    <span class="card-tag">FAST</span>
+                                </div>
+
+                                <div class="format-card-3d" data-fmt="mp3">
+                                    <input type="radio" name="formatOption" value="mp3">
+                                    <div class="card-icon" style="color:#00e676"><i class="fa-solid fa-headphones"></i></div>
+                                    <div class="card-info">
+                                        <div class="card-name">MP3 Audio</div>
+                                        <div class="card-sub">320kbps • Embedded Cover Art</div>
+                                    </div>
+                                    <span class="card-tag tag-audio">AUDIO</span>
+                                </div>
+
+                                <div class="format-card-3d" data-fmt="cover">
+                                    <input type="radio" name="formatOption" value="cover">
+                                    <div class="card-icon" style="color:#ff007f"><i class="fa-solid fa-compact-disc"></i></div>
+                                    <div class="card-info">
+                                        <div class="card-name">Song Cover Art</div>
+                                        <div class="card-sub">Square 1:1 • High-Res JPG</div>
+                                    </div>
+                                    <span class="card-tag tag-cover">COVER</span>
+                                </div>
+
+                                <div class="format-card-3d" data-fmt="thumbnail">
+                                    <input type="radio" name="formatOption" value="thumbnail">
+                                    <div class="card-icon" style="color:#ffb300"><i class="fa-regular fa-image"></i></div>
+                                    <div class="card-info">
+                                        <div class="card-name">HD Thumbnail</div>
+                                        <div class="card-sub">16:9 Banner • Full Size JPG</div>
+                                    </div>
+                                    <span class="card-tag tag-thumb">IMAGE</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3D DOWNLOAD BUTTON -->
+                        <button class="btn-rip-download-3d" id="btn-start-download">
+                            <div class="btn-glow"></div>
+                            <i class="fa-solid fa-download"></i>
+                            <span>INITIATE HIGH-SPEED RIP</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ACTIVE DOWNLOAD HUD CARD -->
+            <section class="download-hud-3d hidden" id="progress-card">
+                <div class="hud-glass">
+                    <div class="hud-header">
+                        <div class="hud-state">
+                            <div class="radar-spinner" id="progress-icon"></div>
+                            <span id="progress-status-text">Accelerating stream rip...</span>
+                        </div>
+                        <div class="hud-stats">
+                            <span class="stat-badge" id="progress-speed">0.0 MB/s</span>
+                            <span class="stat-badge" id="progress-eta">ETA: 0s</span>
+                        </div>
+                    </div>
+
+                    <!-- 3D PROGRESS CYLINDER -->
+                    <div class="progress-cylinder-wrap">
+                        <div class="progress-cylinder-fill" id="progress-fill"></div>
+                        <div class="progress-glow-head"></div>
+                    </div>
+
+                    <div class="hud-footer">
+                        <span id="progress-filename">Preparing file streams...</span>
+                        <span class="percent-counter" id="progress-percent">0%</span>
+                    </div>
+
+                    <!-- SUCCESS COMPLETED ACTIONS -->
+                    <div class="hud-complete-actions hidden" id="complete-actions">
+                        <button class="btn-success-3d btn-play-trigger" id="btn-play-now">
+                            <i class="fa-solid fa-play"></i> Watch / Play Here
+                        </button>
+                        <a href="#" class="btn-success-3d" id="btn-device-save" download>
+                            <i class="fa-solid fa-cloud-arrow-down"></i> Save to This Device
+                        </a>
+                        <button class="btn-success-3d" id="btn-open-completed-file">
+                            <i class="fa-solid fa-folder-open"></i> Show in Explorer Folder
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GRAND VAULT LIBRARY (RECENT DOWNLOADS) -->
+            <section class="vault-section">
+                <div class="vault-header">
+                    <div class="vault-title-group">
+                        <div class="vault-icon"><i class="fa-solid fa-box-archive"></i></div>
+                        <div>
+                            <h2>Media Vault</h2>
+                            <p>All downloaded files saved locally in <code>Downloads/RipNexus</code></p>
+                        </div>
+                    </div>
+                    <button class="btn-refresh-vault" id="btn-refresh-vault">
+                        <i class="fa-solid fa-rotate"></i> Refresh Library
+                    </button>
+                </div>
+
+                <div class="vault-grid" id="history-grid">
+                    <div class="vault-empty">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p>Your media vault is empty. Paste a link above to start downloading!</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="grand-footer">
+            <div class="footer-left">
+                <strong>RipNexus 3D Engine</strong> • High-Performance Open Source Media Suite
+            </div>
+            <div class="footer-right">
+                Developed by <a href="https://github.com/nikhildswll-sys" target="_blank">nikhildswll-sys</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 3D ENGINE & APP SCRIPT -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
